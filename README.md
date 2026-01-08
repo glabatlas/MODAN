@@ -23,7 +23,7 @@ MDNGM is a tool to identify cancer subtype-specific driver modules integrating m
 If you want to use your own data, please put Protein-Protein Interaction (PPI) network into `./datasets/ppi_network.txt`, then put other multi-omics data of cancer `CANCERNAME` into dictionary `./datasets/CANCERNAME/`. Gene mutation data, DNA methylation data, gene expression data and cancer subtype label are required.
 
 - **PPI Network**
-    - File name: `PPI_network.txt`
+    - File name: `ppi_network.txt`
     - Format: txt file separated by `\t`, without row name or column name. Each line contains two gene symbols, representing the two nodes of an edge in the PPI network.
 
 - **Gene mutation data**
@@ -94,3 +94,4 @@ Additionally, trained models are saved in `./models/`, while the gene representa
 
 # Reference Paper
 Coming soon...
+
