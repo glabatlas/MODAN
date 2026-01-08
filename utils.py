@@ -119,34 +119,6 @@ def NIcal(node_index, ppi_matrix_weighted, ppi_weighted, data_mut):
     NI = neighbor_weight_sum / (len(node_neighbors) - 1) * cov
     return NI
 
-def get_module_node_influence(cancer: str, subtype: str, module_index: list):
-    ppi = pd.read_csv('./gene_sample_overlapped/'+cancer+'/ppi.csv',header=None,index_col=None)
-
-    data_mut_total = pd.read_csv('./gene_sample_overlapped/'+cancer+'/'+subtype+'/mut.csv',header=0,index_col=0)
-    data_methy_total = pd.read_csv('./gene_sample_overlapped/'+cancer+'/'+subtype+'/0.05/methy_mut.csv',header=0,index_col=0)
-    data_expr_total = pd.read_csv('./gene_sample_overlapped/'+cancer+'/'+subtype+'/0.05/expr_mut.csv',header=0,index_col=0)
-
-    def idconv(idtable,idx):
-        return idtable.loc[np.array(idx)].values.flatten()
-
-    symbol_idx = pd.DataFrame(range(len(data_mut_total.index)),index=data_mut_total.index)
-    symbol2idx = partial(idconv, symbol_idx)
-    ppi_weighted = pd.DataFrame([symbol2idx(ppi.iloc[:,0]),symbol2idx(ppi.iloc[:,1])]).T.to_numpy()
-
-    ppi_weight_mut = get_edge_weight(data_mut_total.values, ppi_weighted)
-    ppi_weight_methy = get_edge_weight(data_methy_total.values, ppi_weighted)
-    ppi_weight_expr = get_edge_weight(data_expr_total.values, ppi_weighted)
-    ppi_weighted = np.append(ppi_weighted, ((ppi_weight_mut + ppi_weight_methy + ppi_weight_expr)/3).reshape(-1,1), axis=1)
-
-    NI = np.zeros(len(module_index))
-    ppi_matrix_weighted = np.zeros((len(data_mut_total),len(data_mut_total)))
-    ppi_matrix_weighted[ppi_weighted[:,0].astype(int),ppi_weighted[:,1].astype(int)] = ppi_weighted[:,2]
-    ppi_matrix_weighted = np.maximum(ppi_matrix_weighted,ppi_matrix_weighted.T)
-
-    for i in range(len(module_index)):
-        NI[i] = NIcal(symbol2idx(module_index[i]), ppi_matrix_weighted, ppi_weighted, data_mut_total.values)
-    return NI
-
 def get_all_module_influence(cancer: str, subtype: str, all_module_index: list):
     ppi = pd.read_csv('./gene_sample_overlapped/'+cancer+'/ppi.csv',header=None,index_col=None)
 
@@ -190,4 +162,5 @@ def MIcal(module_index, ppi_weighted, data_mut):
             neighbor_edges_index = neighbor_edges_index - set(np.where((ppi_weighted[:,0] == module_index[i])&(ppi_weighted[:,1] == module_index[j]))[0].tolist())
     cov = (data_mut.values[module_index,:].sum(axis=1) > 0).sum()/data_mut.shape[1]
     MI = ppi_weighted[list(neighbor_edges_index), 2].sum()/len(neighbor_edges_index) * cov
+
     return MI
