@@ -16,11 +16,15 @@ MDNGM is a tool to identify cancer subtype-specific driver modules integrating m
 
 ## Data Prepare
 
-**NOTE: Example data is included in this project, and this step is not required when using example data to varify if the program can execute properly. When using example data, please make sure that the preprocessed data in `./gene_sample_overlapped/` exist. You only need to perform this data prepare step when using your own data.**
+**NOTE: Example data is included in this project, and this step is not required when using example data to varify if the program can execute properly. When using example data, please make sure that the preprocessed data in `./gene_overlapped/` and `./gene_sample_overlapped/` exist. You only need to perform this data prepare step when using your own data.**
 
-Please put multi-omics data of cancer `CANCERNAME` into dictionary `./datasets/CANCERNAME/`. Gene mutation data, DNA methylation data, gene expression data and cancer subtype label are required.
+**The sample data contains BRCA cancer samples with Basal and Her2 subtypes.**
 
+If you want to use your own data, please put Protein-Protein Interaction (PPI) network into `./datasets/ppi_network.txt`, then put other multi-omics data of cancer `CANCERNAME` into dictionary `./datasets/CANCERNAME/`. Gene mutation data, DNA methylation data, gene expression data and cancer subtype label are required.
 
+- **PPI Network**
+    - File name: `PPI_network.txt`
+    - Format: txt file separated by `\t`, without row name or column name. Each line contains two gene symbols, representing the two nodes of an edge in the PPI network.
 
 - **Gene mutation data**
     - File name: `CANCERNAME_mut.csv`
@@ -70,11 +74,23 @@ Next, please perform feature learning for each subtype of each cancer type. For 
 python ./feature_learning.py -c CANCERNAME -s SUBTYPENAME
 ```
 
+In this step, if you use example data, you can run these two commands:
+```
+python ./feature_learning.py -c BRCA -s Basal
+python ./feature_learning.py -c BRCA -s Her2
+```
+
+
 After learning representation of all subtypes, please run this command to generate modules:
 ```
 python ./clustering.py
 ```
 
-The result for sbutype `SUBTYPENAME` of cancer `CANCERNAME` is stored in `./results/modules/CANCERNAME/SUBTYPENAME/final_results.csv`
+# Results
+
+The result for subtype `SUBTYPENAME` of cancer `CANCERNAME` is stored in `./results/modules/CANCERNAME/SUBTYPENAME/final_results.csv`
+
+Additionally, trained models are saved in `./models/`, while the gene representations are saved in `./results/features`.
+
 # Reference Paper
 Coming soon...
